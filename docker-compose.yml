@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  express:
+    build: ./webgr-api
+    ports:
+      - "3000:3000"
+    container_name: nodejs-rabbitmq-express
+    command: npm run start:dev
+    volumes:
+      - ./webgr-api:/usr/app/
+      - /usr/app/node_modules
+    # depends_on:
+    #   - rabbitmq
+  nest:
+    build: ./publish-integracoes
+    container_name: nodejs-rabbitmq-nest
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 3001:3000
+    command: npm run start:dev
+    volumes:
+      - ./publish-integracoes:/usr/src/app/dist
+      - ./publish-integracoes/node_modules:/usr/src/app/node_modules
+    # depends_on:
+    #   - rabbitmq
+  # rabbitmq:
+  #   image: "rabbitmq:3.9-management-alpine"
+  #   container_name: nodejs-rabbitmq-rabbitmq
+  #   hostname: rabbitmq
+  #   ports:
+  #     - "8080:15672"
+  #     - "5672:5672"
+  #   volumes:
+  #     - "./.rabbitmq_data:/var/lib/rabbitmq/mnesia"
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=admin
+  #     - RABBITMQ_DEFAULT_PASS=rabbit
